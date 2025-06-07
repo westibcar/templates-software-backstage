@@ -1,0 +1,94 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: flask-service # Nome único do template
+  title: Template Flask Service  # Título exibido na interface do Backstage
+  description: Template para deploy do app Flask service # Descrição breve do que o template faz
+spec:
+  owner: devops  # Dono deste template no catálogo
+  type: service  # Tipo do template (pode ser 'website', 'service', etc.)
+
+  # FORMULÁRIO apresentado ao usuário na interface do Backstage
+  parameters:
+    - title: Template Flask Service 
+      required:
+        - name
+        - environment
+      properties:
+        name:
+          title: Nome do Serviço
+          type: string
+          description: Template para deploy do app Flask service
+          ui:autofocus: true
+        environment:
+          title: Ambiente
+          type: string
+          description: Ambiente onde o serviço será implantado
+          enum:
+            - dev
+            - staging
+            - prod
+          default: dev
+        owner:
+          title: devops
+          type: string
+          description: devops
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              kind: Group
+
+    - title: Repositório Template Software
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Localização do Repositório
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+
+  # PASSOS de execução do template (executados em série)
+  steps:
+    - id: fetch-base
+      name: Buscar Template Base
+      action: fetch:template
+      input:
+        url: ./template                        # Caminho local ou repositório remoto com os arquivos-base
+        values:
+          name: ${{ parameters.name }}
+          owner: ${{ parameters.owner }}
+
+    - id: fetch-docs
+      name: Buscar Documentação
+      action: fetch:plain
+      input:
+        targetPath: ./community
+        url: https://github.com/backstage/community/tree/main/backstage-community-sessions
+
+    - id: publish
+      name: Publicar no GitHub
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: Este é o serviço ${{ parameters.name }}
+        repoUrl: ${{ parameters.repoUrl }}
+        defaultBranch: main
+
+    - id: register
+      name: Registrar no Catálogo
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
+        catalogInfoPath: /catalog-info.yaml
+
+  # LINKS DE SAÍDA apresentados ao final do processo
+  output:
+    links:
+      - title: Repositório
+        url: ${{ steps['publish'].output.remoteUrl }}
+      - title: Abrir no Catálogo
+        icon: catalog
+        entityRef: ${{ steps['register'].output.entityRef }}
