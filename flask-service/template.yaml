@@ -42,7 +42,7 @@ spec:
       required:
         - repoName
       properties:
-        repoUrl:
+        repoName:
           title: Localização do Repositório
           type: string
           ui:field: RepoUrlPicker
