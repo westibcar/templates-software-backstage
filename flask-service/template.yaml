@@ -52,34 +52,34 @@ spec:
 
   # PASSOS de execução do template (executados em série)
   steps:
-  - id: fetch-base
-    name: Buscar Template Base
-    action: fetch:template
-    input:
-      url: ./template
-      values:
-        name: ${{ parameters.name }}
-        environment: ${{ parameters.environment }}
-        owner: ${{ parameters.owner }}
+    - id: fetch-base
+      name: Buscar Template Base
+      action: fetch:template
+      input:
+        url: ./template                        # Caminho local ou repositório remoto com os arquivos-base
+        values:
+          name: ${{ parameters.name }}
+          environment: ${{ parameters.environment }}
+          owner: ${{ parameters.owner }}
 
-  - id: publish
-    name: Publicar no GitHub
-    action: publish:github
-    input:
-      allowedHosts: ['github.com']
-      description: Este é o serviço ${{ parameters.name }}
-      repoUrl: github.com/westibcar/${{ parameters.repoName }}
-      defaultBranch: main
+    - id: publish
+      name: Publicar no GitHub
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: Este é o serviço ${{ parameters.name }}
+        repoUrl: github.com?owner=westibcar&repo=${{ parameters.repoName }}
+        defaultBranch: main
 
-  - id: fetch-docs
-    name: Buscar Documentação
-    action: fetch:plain
-    input:
-      targetPath: ./community
-      url: https://github.com/backstage/community/tree/main/backstage-community-sessions
+    - id: register
+      name: Registrar no Catálogo
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
+        catalogInfoPath: /catalog-info.yaml
 
-  - id: register
-    name: Registrar no Catálogo
-    action: catalog:register
-    input:
-      url: https://github.com/westibcar/${{ parameters.repoName }}/blob/main/catalog-info.yaml
+  # LINKS DE SAÍDA apresentados ao final do processo
+  output:
+    links:
+      - title: Repositório
+        url: ${{ steps['publish'].output.remoteUrl }}
