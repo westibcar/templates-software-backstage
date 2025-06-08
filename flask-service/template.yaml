@@ -40,7 +40,7 @@ spec:
 
     - title: Repositório Template Software
       required:
-        - repoUrl
+        - repoName
       properties:
         repoUrl:
           title: Localização do Repositório
@@ -59,14 +59,8 @@ spec:
         url: ./template                        # Caminho local ou repositório remoto com os arquivos-base
         values:
           name: ${{ parameters.name }}
+          environment: ${{ parameters.environment }}
           owner: ${{ parameters.owner }}
-
-    - id: fetch-docs
-      name: Buscar Documentação
-      action: fetch:plain
-      input:
-        targetPath: ./community
-        url: https://github.com/backstage/community/tree/main/backstage-community-sessions
 
     - id: publish
       name: Publicar no GitHub
@@ -74,8 +68,15 @@ spec:
       input:
         allowedHosts: ['github.com']
         description: Este é o serviço ${{ parameters.name }}
-        repoUrl: ${{ parameters.repoUrl }}
+        repoUrl: github.com/westibcar/${{ parameters.repoName }}
         defaultBranch: main
+
+    - id: fetch-docs
+      name: Buscar Documentação
+      action: fetch:plain
+      input:
+        targetPath: ./community
+        url: https://github.com/backstage/community/tree/main/backstage-community-sessions
 
     - id: register
       name: Registrar no Catálogo
