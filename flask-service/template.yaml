@@ -32,6 +32,15 @@ spec:
             - staging
             - development
           default: development
+        owner:
+          title: Owner
+          type: string
+          description: Owner of the component
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              kind: Group
+
     - title: Choose a location
       required:
         - repoUrl
