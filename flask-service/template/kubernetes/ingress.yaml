@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ${{ values.app_name }}-ingress
+spec:
+  rules:
+  - host: ${{ values.app_name }}.uday.com.br
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: ${{ values.app_name }}-service
+            port:
+              number: 8081

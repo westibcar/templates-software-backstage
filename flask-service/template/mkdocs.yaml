@@ -1,0 +1,14 @@
+site_name: ${{ values.app_name }}
+site_description: 'Documentação de usabilidade do ${{ values.app_name }}'
+repo_url: https://github.com/westibcar/${{ values.app_name }}
+edit_uri: edit/main/docs
+
+plugins:
+  - techdocs-core
+  - redirects:
+      redirect_maps:
+        'index.md': 'docs/index.md'
+
+nav:
+  - Overview:
+      - Como usar o APP Uday: 'docs/index.md'
