@@ -51,6 +51,7 @@ spec:
       action: fetch:template
       input:
         url: ./template
+        targetPath: '.'
         values:
           app_name: ${{ parameters.name }}
           app_env: ${{ parameters.environment }}
