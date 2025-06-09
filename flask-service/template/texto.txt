@@ -1,1 +1,1 @@
-Bem-vindo ao projeto ${{ values.name }} em ambiente ${{ values.environment }}. Responsável: ${{ values.owner }}.
+Bem-vindo ao projeto ${{ values.app_name }} em ambiente ${{ values.app_env }}. Responsável: ${{ values.app_owner }}.
