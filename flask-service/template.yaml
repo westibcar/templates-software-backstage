@@ -81,3 +81,11 @@ spec:
       input:
         repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
+    
+    - id: add-secrets
+      name: Adicionar Docker Hub Secrets
+      action: github:repo:secrets
+      input:
+      secrets:
+        DOCKERHUB_USERNAME: ${{ secrets.backstage_dockerhub_username }}
+        DOCKERHUB_TOKEN: ${{ secrets.backstage_dockerhub_token }}
