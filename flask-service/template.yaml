@@ -65,9 +65,6 @@ spec:
           app_name: ${{ parameters.name }}
           app_env: ${{ parameters.environment }}
           app_owner: ${{ parameters.owner }}
-    
-    - id: build docker
-      action: docker:build
 
     - id: publish
       name: Publish
