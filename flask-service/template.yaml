@@ -65,6 +65,9 @@ spec:
           app_name: ${{ parameters.name }}
           app_env: ${{ parameters.environment }}
           app_owner: ${{ parameters.owner }}
+    
+    - id: build docker
+      action: docker:build
 
     - id: publish
       name: Publish
@@ -74,10 +77,6 @@ spec:
         description: This is ${{ parameters.name }}
         repoUrl: github.com/uday-platform-idp-org/${{ parameters.repoUrl }}
         defaultBranch: 'main'
-
-    - id: build docker
-      name: Build Docker Image
-      action: docker:build
 
     - id: register
       name: Register
