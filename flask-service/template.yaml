@@ -72,8 +72,12 @@ spec:
       input:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.name }}
-        repoUrl: github.com/westibcar/${{ parameters.repoUrl }}
+        repoUrl: github.com/uday-platform-idp-org/${{ parameters.repoUrl }}
         defaultBranch: 'main'
+
+    - id: build docker
+      name: Build Docker Image
+      action: docker:build
 
     - id: register
       name: Register
@@ -81,11 +85,3 @@ spec:
       input:
         repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
-    
-    - id: add-secrets
-      name: Adicionar Docker Hub Secrets
-      action: github:repo:secrets
-      input:
-        secrets:
-          DOCKERHUB_USERNAME: ${{ secrets.backstage_dockerhub_username }}
-          DOCKERHUB_TOKEN: ${{ secrets.backstage_dockerhub_token }}
