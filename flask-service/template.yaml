@@ -69,10 +69,8 @@ spec:
       input:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.name }}
-        repoUrl: github.com?owner=uday-platform-idp-org&repo=${{ parameters.repo }}
+        repoUrl: github.com/uday-platform-idp-org/=${{ parameters.repo }}
         defaultBranch: 'main'
-        protectDefaultBranch: false
-        visibility: public
 
     - id: register
       name: Register
