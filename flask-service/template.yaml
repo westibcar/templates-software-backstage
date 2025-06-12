@@ -43,15 +43,12 @@ spec:
 
     - title: Choose a location
       required:
-        - repoUrl
+        - repo
       properties:
-        repoUrl:
-          title: Repository Location
+        repo:
+          title: Repository Name
           type: string
-          ui:field: RepoUrlPicker
-          ui:options:
-            allowedHosts:
-              - github.com
+          description: Name of the repository to be created
 
   # here's the steps that are executed in series in the scaffolder backend
   steps:
@@ -72,11 +69,11 @@ spec:
       input:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.name }}
-        repoUrl: github.com?owner=uday-platform-idp-org&repo=${{ parameters.repoUrl }}
+        repoUrl: github.com?owner=uday-platform-idp-org&repo=${{ parameters.repo }}
         defaultBranch: 'main'
         protectDefaultBranch: false
         visibility: public
-        
+
     - id: register
       name: Register
       action: catalog:register
