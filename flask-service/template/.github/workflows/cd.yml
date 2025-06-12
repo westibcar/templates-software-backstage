@@ -15,7 +15,7 @@ jobs:
       - name: Clonar repositório de deployment
         uses: actions/checkout@v3
         with:
-          repository: westibcar/${{ values.app_name }}
+          repository: uday-platform-idp-org/${{ values.app_name }}
           token: ${{ '${{ secrets.PERSONAL_ACCESS_TOKEN }}' }}  # precisa de permissão para escrever
           path: infra
 
