@@ -1,0 +1,69 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    paths:
+      - ${{ values.app_name }}/**  # Aciona para mudanças no app
+    branches:
+      - main
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+
+    outputs:
+      image_tag: ${{ steps.set-tag.outputs.image_tag }}
+      commit_sha: ${{ github.sha }}
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v3
+
+      - name: Definir a tag da imagem (SHA reduzido)
+        id: set-tag
+        run: |
+          IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-7)
+          echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Login no Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build da imagem Docker
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ values.app_name }}:${{ steps.set-tag.outputs.image_tag }} .
+
+      - name: Push da imagem
+        run: |
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ values.app_name }}:${{ steps.set-tag.outputs.image_tag }}
+
+  update-image-tag:
+    needs: build-and-push-image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositório de deployment
+        uses: actions/checkout@v3
+        with:
+          repository: uday-platform-idp-org/${{ values.app_name }}
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          path: infra
+
+      - name: Configurar Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Atualizar a tag da imagem no Helm values.yaml
+        run: |
+          cd infra
+          sed -i "s/tag: .*/tag: ${{ needs.build-and-push-image.outputs.image_tag }}/" charts/${{ values.app_name }}/values.yaml
+
+      - name: Commit e Push
+        run: |
+          cd infra
+          git add .
+          git commit -m "Atualiza imagem para ${{ needs.build-and-push-image.outputs.image_tag }}"
+          git push
