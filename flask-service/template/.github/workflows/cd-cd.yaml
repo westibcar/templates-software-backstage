@@ -76,7 +76,7 @@ jobs:
       - name: Push da nova branch
         run: |
           cd infra
-          git push origin update-image-tag-${IMAGE_TAG}
+          git push origin update-image-tag-${{ '${{ github.run_id }}' }}
 
       - name: Criar Pull Request
         uses: peter-evans/create-pull-request@v5
@@ -86,5 +86,5 @@ jobs:
           commit-message: Atualiza imagem para ${IMAGE_TAG}
           title: Atualiza imagem para ${IMAGE_TAG}
           body: PR criado automaticamente pela pipeline para atualizar a tag da imagem no Helm.
-          branch: update-image-tag-${IMAGE_TAG}
+          branch: update-image-tag-${{ '${{ github.run_id }}' }}
           base: main
