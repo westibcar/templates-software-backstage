@@ -72,6 +72,7 @@ spec:
         repoUrl: github.com?owner=uday-platform-idp-org&repo=${{ parameters.repo }}
         defaultBranch: 'main'
         initializeWithReadme: true
+        repoVisibility: public
 
     - id: register
       name: Register
