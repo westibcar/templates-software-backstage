@@ -39,6 +39,7 @@ jobs:
         run: |
           docker push ${{ '${{ secrets.DOCKERHUB_USERNAME }}' }}/${{ values.app_name }}:${IMAGE_TAG}
 
+  
   update-image-tag:
     needs: build-and-push-image
     runs-on: ubuntu-latest
@@ -56,15 +57,34 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
 
+      - name: Criar nova branch para alteração
+        run: |
+          cd infra
+          git checkout -b update-image-tag-${{ github.run_id }}
+
       - name: Atualizar a tag da imagem no Helm values.yaml
         run: |
           cd infra
           IMAGE_TAG=${{ '${{ needs.build-and-push-image.outputs.image_tag }}' }}
           sed -i "s/tag: .*/tag: ${IMAGE_TAG}/" charts/${{ values.app_name }}/values.yaml
 
-      - name: Commit e Push
+      - name: Commit das alterações
         run: |
           cd infra
           git add .
           git commit -m "Atualiza imagem para ${IMAGE_TAG}"
-          git push
+
+      - name: Push da nova branch
+        run: |
+          cd infra
+          git push origin update-image-tag-${{ github.run_id }}
+
+      - name: Criar Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ '${{ secrets.PERSONAL_ACCESS_TOKEN }}' }}
+          commit-message: Atualiza imagem para ${IMAGE_TAG}
+          title: Atualiza imagem para ${IMAGE_TAG}
+          body: PR criado automaticamente pela pipeline para atualizar a tag da imagem no Helm.
+          branch: update-image-tag-${{ github.run_id }}
+          base: main
