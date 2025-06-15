@@ -63,7 +63,7 @@ jobs:
       - name: Atualizar a tag da imagem no Helm values.yaml
         run: |
           echo "Alterando tag da imagem para: ${{ '${{ needs.build-and-push-image.outputs.image_tag }}' }}"
-          sed -i "s/tag: .*/tag: ${{ '${{ needs.build-and-push-image.outputs.image_tag }}' }}/" charts/${{ values.app_name }}/values.yaml
+          sed -i 's/^\( *tag:\).*/\1 ${{ '${{ needs.build-and-push-image.outputs.image_tag }}' }}/' charts/${{ values.app_name }}/values.yaml
         working-directory: infra
 
       - name: Commit das alterações
