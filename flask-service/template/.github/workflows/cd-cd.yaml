@@ -88,4 +88,3 @@ jobs:
           body: PR criado automaticamente pela pipeline para atualizar a tag da imagem no Helm.
           branch: update-image-tag-${{ '${{ github.run_id }}' }}
           base: main
-        working-directory: infra
