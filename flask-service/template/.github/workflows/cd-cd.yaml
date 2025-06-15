@@ -76,7 +76,7 @@ jobs:
       - name: Push da nova branch
         run: |
           cd infra
-          git push origin update-image-tag-${{ '${{ github.run_id }}' }}'
+          git push origin update-image-tag-${{ '${{ github.run_id }}' }}
 
       - name: Criar Pull Request
         uses: peter-evans/create-pull-request@v5
