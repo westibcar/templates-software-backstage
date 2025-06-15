@@ -71,6 +71,7 @@ spec:
         description: This is ${{ parameters.name }}
         repoUrl: github.com?owner=uday-platform-idp-org&repo=${{ parameters.repo }}
         defaultBranch: 'main'
+        initializeWithReadme: true
         
     - id: register
       name: Register
