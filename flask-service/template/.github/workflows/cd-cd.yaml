@@ -81,6 +81,7 @@ jobs:
       - name: Criar Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
+          path: infra
           token: ${{ '${{ secrets.PERSONAL_ACCESS_TOKEN }}' }}
           commit-message: Atualiza imagem para ${IMAGE_TAG}
           title: Atualiza imagem para ${IMAGE_TAG}
