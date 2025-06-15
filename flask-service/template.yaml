@@ -71,7 +71,6 @@ spec:
         description: This is ${{ parameters.name }}
         repoUrl: github.com?owner=uday-platform-idp-org&repo=${{ parameters.repo }}
         defaultBranch: 'main'
-        visibility: 'private'
         
     - id: register
       name: Register
