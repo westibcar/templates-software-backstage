@@ -74,6 +74,20 @@ spec:
         initializeWithReadme: true
         repoVisibility: public
 
+    - id: init-commit
+      name: Commit inicial
+      action: run:script
+      input:
+        script: |
+          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/uday-platform-idp-org/${{ parameters.repo }}.git
+          cd ${{ parameters.repo }}
+          echo "# ${{ parameters.name }}" > README.md
+          git config user.email "backstage@uday.com"
+          git config user.name "Backstage Bot"
+          git add .
+          git commit -m "Initial commit"
+          git push origin main
+
     - id: register
       name: Register
       action: catalog:register
