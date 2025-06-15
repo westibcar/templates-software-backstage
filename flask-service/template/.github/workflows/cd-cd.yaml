@@ -62,8 +62,8 @@ jobs:
 
       - name: Atualizar a tag da imagem no Helm values.yaml
         run: |
-          IMAGE_TAG=${{ needs.build-and-push-image.outputs.image_tag }}
-          sed -i "s/tag: .*/tag: ${IMAGE_TAG}/" charts/${{ values.app_name }}/values.yaml
+          IMAGE_TAG= ${{ '${{ github.event.workflow_run.head_sha }}' }}
+          sed -i "s/tag: .*/tag: ${IMAGE_TAG::7}/" charts/uday-app/values.yaml
         working-directory: infra
 
       - name: Commit das alterações
