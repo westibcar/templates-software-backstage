@@ -82,9 +82,10 @@ jobs:
       - name: Criar Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ '${{ secrets.PERSONAL_ACCESS_TOKEN }}' }}
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           commit-message: Atualiza imagem para ${IMAGE_TAG}
           title: Atualiza imagem para ${IMAGE_TAG}
           body: PR criado automaticamente pela pipeline para atualizar a tag da imagem no Helm.
           branch: update-image-tag-${{ github.run_id }}
           base: main
+        working-directory: infra
