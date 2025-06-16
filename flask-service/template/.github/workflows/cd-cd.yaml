@@ -80,3 +80,50 @@ jobs:
           base: main
           # Deleta a branch após o merge do PR
           delete-branch: true
+        
+      - name: Install ArgoCD CLI
+        shell: bash
+        run: |
+          curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          chmod +x argocd
+          sudo mv argocd /usr/local/bin/argocd
+          argocd version
+
+      - name: ArgoCD Login
+        shell: bash
+        run: |
+          argocd login argocd.uday.com.br \
+            --insecure \
+            --grpc-web \
+            --username admin \
+            --password ${{ secrets.ARGOCD_PASSWORD }}
+
+      - name: Ensure ArgoCD repo and app
+        shell: bash
+        run: |
+          repo_url="https://github.com/uday-platform-idp-org/${{ values.app_name }}.git"
+          
+          # Adiciona o repositório ao ArgoCD, se ainda não estiver
+          if ! argocd repo list | grep -q "$repo_url"; then
+            argocd repo add "$repo_url"
+          fi
+
+          # Cria o app se ainda não existir
+          if ! argocd app get ${{ values.app_name }} > /dev/null 2>&1; then
+            argocd app create ${{ values.app_name }} \
+              --repo "$repo_url" \
+              --path charts/${{ values.app_name }} \
+              --dest-namespace ${{ values.app_env }} \
+              --dest-server https://kubernetes.default.svc \
+              --values values-${{ values.app_env }}.yaml \
+              --revision main \
+              --sync-policy manual \
+              --sync-option CreateNamespace=true \
+              --type helm
+          fi
+
+      - name: ArgoCD App Sync
+        shell: bash
+        run: |
+          argocd app sync ${{ values.app_name }}
+          argocd app wait ${{ values.app_name }} --timeout 180
