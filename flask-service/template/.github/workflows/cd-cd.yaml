@@ -42,8 +42,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Este passo de checkout é necessário para a action create-pull-request funcionar no mesmo repositório
-      # Se o seu código da app e do helm estiverem em repositórios diferentes, use o checkout original
       - name: Checkout do código do deployment
         uses: actions/checkout@v3
         with:
@@ -51,17 +49,23 @@ jobs:
           repository: uday-platform-idp-org/${{ values.app_name }}
           token: ${{ '${{ secrets.PERSONAL_ACCESS_TOKEN }}' }}
           path: infra # Clona para dentro do diretório 'infra'
-      
+          ref: main # <--- Garante que você esteja na branch 'main'
+
       - name: 🔍 Listar conteúdo do diretório clonado (DEBUG)
         run: ls -R infra
+
+      - name: Configurar Git para o commit
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+        working-directory: infra # Execute a configuração do Git dentro do diretório do repositório
 
       - name: Atualizar a tag da imagem no Helm values.yaml
         env:
           NEW_TAG: ${{ '${{ needs.build-and-push-image.outputs.image_tag }}' }}
-        working-directory: infra # Certifique-se de que este diretório está correto
+        working-directory: infra
         run: |
           echo "Alterando a tag da imagem para: $NEW_TAG"
-          # Substitui a linha que começa com 2 espaços e 'tag:'
           sed -i "s/^  tag: .*/  tag: $NEW_TAG/" charts/${{ values.app_name }}/values.yaml
         
       - name: Commit e Push da alteração para main
