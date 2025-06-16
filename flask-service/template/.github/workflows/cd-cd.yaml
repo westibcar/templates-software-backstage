@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       # Define uma saída para este job, que poderá ser usada em outros jobs
-      image_tag: ${{ steps.set-tag.outputs.tag }}
+      image_tag: ${{ '${{ steps.set-tag.outputs.tag }}' }}
 
     steps:
       - name: Checkout do código
@@ -33,8 +33,8 @@ jobs:
       - name: Build e Push da imagem
         # A tag da imagem é recuperada da saída do passo 'set-tag'
         run: |
-          docker build -t ${{ '${{ secrets.DOCKERHUB_USERNAME }}' }}/${{ values.app_name }}:${{ steps.set-tag.outputs.tag }} .
-          docker push ${{ '${{ secrets.DOCKERHUB_USERNAME }}' }}/${{ values.app_name }}:${{ steps.set-tag.outputs.tag }}
+          docker build -t ${{ '${{ secrets.DOCKERHUB_USERNAME }}' }}/${{ values.app_name }}:${{ '${{ steps.set-tag.outputs.tag }}' }} .
+          docker push ${{ '${{ secrets.DOCKERHUB_USERNAME }}' }}/${{ values.app_name }}:${{ '${{ steps.set-tag.outputs.tag }}' }}
 
   update-image-tag:
     # Garante que este job só rode após o sucesso do job anterior
@@ -55,7 +55,7 @@ jobs:
       - name: Atualizar a tag da imagem no Helm values.yaml
         env:
           # Passa a tag do job anterior para uma variável de ambiente deste passo
-          NEW_TAG: ${{ needs.build-and-push-image.outputs.image_tag }}
+          NEW_TAG: ${{ '${{ needs.build-and-push-image.outputs.image_tag }}' }}
         run: |
           echo "Alterando a tag da imagem para: $NEW_TAG"
           # O sed agora usa a variável de ambiente $NEW_TAG. Isso é mais seguro e legível.
@@ -68,11 +68,11 @@ jobs:
           path: infra
           token: ${{ '${{ secrets.PERSONAL_ACCESS_TOKEN }}' }}
           # A action criará o commit, a branch e o PR automaticamente
-          commit-message: "chore: Atualiza imagem de ${{ values.app_name }} para ${{ needs.build-and-push-image.outputs.image_tag }}"
-          title: "CI: Atualiza imagem para ${{ needs.build-and-push-image.outputs.image_tag }}"
-          body: "PR criado automaticamente pela pipeline para atualizar a tag da imagem no Helm para a versão **${{ needs.build-and-push-image.outputs.image_tag }}**."
+          commit-message: "chore: Atualiza imagem de ${{ values.app_name }} para ${{ '${{ needs.build-and-push-image.outputs.image_tag }}' }}"
+          title: "CI: Atualiza imagem para ${{ '${{ needs.build-and-push-image.outputs.image_tag }}' }}"
+          body: "PR criado automaticamente pela pipeline para atualizar a tag da imagem no Helm para a versão **${{ '${{ needs.build-and-push-image.outputs.image_tag }}' }}**."
           # Cria uma branch mais descritiva
-          branch: "ci/update-image-${{ needs.build-and-push-image.outputs.image_tag }}"
+          branch: "ci/update-image-${{ '${{ needs.build-and-push-image.outputs.image_tag }}' }}"
           base: main
           # Deleta a branch após o merge do PR
           delete-branch: true
