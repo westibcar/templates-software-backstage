@@ -54,7 +54,7 @@ jobs:
 
       - name: Atualizar a tag da imagem no Helm values.yaml
         env:
-          NEW_TAG: ${{ needs.build-and-push-image.outputs.image_tag }}
+          NEW_TAG: ${{ '${{ needs.build-and-push-image.outputs.image_tag }}' }}
         run: |
           echo "Alterando a tag da imagem para: $NEW_TAG"
           # Substitui a linha que começa com 2 espaços e 'tag:'
