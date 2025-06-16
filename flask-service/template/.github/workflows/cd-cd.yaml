@@ -54,12 +54,12 @@ jobs:
 
       - name: Atualizar a tag da imagem no Helm values.yaml
         env:
-          # Passa a tag do job anterior para uma variável de ambiente deste passo
-          NEW_TAG: ${{ '${{ needs.build-and-push-image.outputs.image_tag }}' }}
+          NEW_TAG: ${{ needs.build-and-push-image.outputs.image_tag }}
         run: |
           echo "Alterando a tag da imagem para: $NEW_TAG"
-          # O sed agora usa a variável de ambiente $NEW_TAG. Isso é mais seguro e legível.
-          sed -i "s/^\( *tag:\).*/\1 $NEW_TAG/" infra/charts/${{ values.app_name }}/values.yaml
+          # Substitui a linha que começa com 2 espaços e 'tag:'
+          sed -i "s/^  tag: .*/  tag: $NEW_TAG/" infra/charts/${{ values.app_name }}/values.yaml
+        working-directory: infra # Certifique-se de que este diretório está correto
 
       - name: Criar Pull Request com a atualização
         uses: peter-evans/create-pull-request@v6
