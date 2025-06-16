@@ -64,19 +64,11 @@ jobs:
           # Substitui a linha que começa com 2 espaços e 'tag:'
           sed -i "s/^  tag: .*/  tag: $NEW_TAG/" charts/${{ values.app_name }}/values.yaml
         
-
-      - name: Criar Pull Request com a atualização
-        uses: peter-evans/create-pull-request@v6
-        with:
-          # Aponta para o diretório que contém o repositório clonado
-          path: infra
-          token: ${{ '${{ secrets.PERSONAL_ACCESS_TOKEN }}' }}
-          # A action criará o commit, a branch e o PR automaticamente
-          commit-message: "chore: Atualiza imagem de ${{ values.app_name }} para ${{ '${{ needs.build-and-push-image.outputs.image_tag }}' }}"
-          title: "CI: Atualiza imagem para ${{ '${{ needs.build-and-push-image.outputs.image_tag }}' }}"
-          body: "PR criado automaticamente pela pipeline para atualizar a tag da imagem no Helm para a versão **${{ '${{ needs.build-and-push-image.outputs.image_tag }}' }}**."
-          # Cria uma branch mais descritiva
-          branch: "ci/update-image-${{ '${{ needs.build-and-push-image.outputs.image_tag }}' }}"
-          base: main
-          # Deleta a branch após o merge do PR
-          delete-branch: true
+      - name: Commit e Push da alteração para main
+        working-directory: infra
+        run: |
+          git add charts/${{ values.app_name }}/values.yaml
+          git commit -m "chore: Atualiza imagem de ${{ values.app_name }} para ${{ '${{ needs.build-and-push-image.outputs.image_tag }}' }}"
+          git push origin main
+          # Certifique-se de que o token usado (secrets.PERSONAL_ACCESS_TOKEN)
+          # tenha permissões de escrita (write) no repositório de deployment.
