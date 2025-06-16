@@ -51,6 +51,9 @@ jobs:
           repository: uday-platform-idp-org/${{ values.app_name }}
           token: ${{ '${{ secrets.PERSONAL_ACCESS_TOKEN }}' }}
           path: infra # Clona para dentro do diretório 'infra'
+      
+      - name: 🔍 Listar conteúdo do diretório clonado (DEBUG)
+        run: ls -R infra
 
       - name: Atualizar a tag da imagem no Helm values.yaml
         env:
@@ -58,7 +61,7 @@ jobs:
         run: |
           echo "Alterando a tag da imagem para: $NEW_TAG"
           # Substitui a linha que começa com 2 espaços e 'tag:'
-          sed -i "s/^  tag: .*/  tag: $NEW_TAG/" infra/charts/${{ values.app_name }}/values.yaml
+          sed -i "s/^  tag: .*/  tag: $NEW_TAG/" charts/${{ values.app_name }}/values.yaml
         working-directory: infra # Certifique-se de que este diretório está correto
 
       - name: Criar Pull Request com a atualização
